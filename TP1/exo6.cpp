@@ -14,79 +14,166 @@ struct Liste{
 
 struct DynaTableau{
     int* donnees;
+    int nb;
+    int capacite;
     // your code
 };
 
 
 void initialise(Liste* liste)
 {
-
+    liste->premier = nullptr;
 }
 
 bool est_vide(const Liste* liste)
 {
-    return false;
+    return liste->premier == nullptr;
 }
 
 void ajoute(Liste* liste, int valeur)
 {
-
+    if (liste->premier == nullptr) {
+        liste->premier = new Noeud;
+        liste->premier->donnee = valeur;
+        liste->premier->suivant = nullptr;
+    }
+    else {
+        Noeud * aux = liste->premier;
+        while (aux->suivant != nullptr) {
+            aux = aux->suivant;
+        }
+        aux->suivant = new Noeud;
+        aux->suivant->donnee = valeur;
+        aux->suivant->suivant = nullptr;
+    }
 }
 
 void affiche(const Liste* liste)
 {
-
+    Noeud * aux = liste->premier;
+    while (aux != nullptr) {
+        cout << "-- " << aux->donnee << " --" << endl;
+        aux = aux->suivant;
+    }
 }
 
 int recupere(const Liste* liste, int n)
 {
-    return 0;
+    Noeud * aux = liste->premier;
+    int i=0;
+    while (aux != nullptr && i < n) {
+        aux = aux->suivant;
+        i++;
+    }
+    if (i < n) {
+        return -1;
+    }
+    else {
+        return aux->donnee;
+    }
 }
 
 int cherche(const Liste* liste, int valeur)
 {
-    return -1;
+    if (liste->premier->donnee == valeur) {
+        return 0;
+    }
+    Noeud * aux = liste->premier;
+    bool trouve = (aux->donnee == valeur);
+    int i=0;
+    while (aux->suivant != nullptr && !(trouve)) {
+        aux = aux->suivant;
+        i++;
+        bool trouve = (aux->donnee == valeur);
+        cout << aux->donnee << " " << valeur << " " << trouve << endl;
+    }
+    if (trouve) {
+        return i;
+    }
+    else {
+        return -1;
+    }
 }
 
 void stocke(Liste* liste, int n, int valeur)
 {
-
-}
-
-void ajoute(DynaTableau* tableau, int valeur)
-{
-
+    Noeud * aux = liste->premier;
+    int i=0;
+    while (aux->suivant != nullptr && i < n) {
+        aux = aux->suivant;
+        i++;
+    }
+    if (i == n) {
+        aux->donnee = valeur;
+    }
 }
 
 
 void initialise(DynaTableau* tableau, int capacite)
 {
+    tableau->capacite = capacite;
+    tableau->donnees = (int*) malloc(capacite*sizeof(int));
+    tableau->nb = 0;
+}
 
+void ajoute(DynaTableau* tableau, int valeur)
+{
+    if (tableau->nb == tableau->capacite) {
+        /*DynaTableau * tabTemp;
+        initialise(tabTemp,tableau->capacite+1);
+        for (int i=0 ; i<tableau->capacite ; i++) {
+            tabTemp->donnees[i] = tableau->donnees[i];
+        }
+        //free(tableau);
+        tableau = tabTemp;*/
+    }
+    tableau->donnees[tableau->nb] = valeur;
+    tableau->nb++;
 }
 
 bool est_vide(const DynaTableau* liste)
 {
-    return false;
+    return liste->nb == 0;
 }
 
 void affiche(const DynaTableau* tableau)
 {
-
+    for (int i=0 ; i<tableau->nb ; i++) {
+        cout << "[[ " << tableau->donnees[i] << " ]]" << endl;
+    }
 }
 
 int recupere(const DynaTableau* tableau, int n)
 {
-    return 0;
+    if (n > tableau->nb) {
+        return -1;
+    }
+    else {
+        return tableau->donnees[n];
+    }
 }
 
 int cherche(const DynaTableau* tableau, int valeur)
 {
-    return -1;
+    int i=0;
+    bool trouve = tableau->donnees[i] == valeur;
+    while (i<tableau->nb && !(trouve)) {
+        i++;
+        trouve = tableau->donnees[i] == valeur;
+    }
+    if (trouve) {
+        return i;
+    }
+    else {
+        return -1;
+    }
 }
 
 void stocke(DynaTableau* tableau, int n, int valeur)
 {
-
+    if (n <= tableau->nb) {
+        tableau->donnees[n-1] = valeur;
+    }
 }
 
 //void pousse_file(DynaTableau* liste, int valeur)
