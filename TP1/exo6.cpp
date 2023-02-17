@@ -176,55 +176,71 @@ void stocke(DynaTableau* tableau, int n, int valeur)
     }
 }
 
-//void pousse_file(DynaTableau* liste, int valeur)
-void pousse_file(Liste* liste, int valeur)
+void pousse_file(DynaTableau* liste, int valeur)
+//void pousse_file(Liste* liste, int valeur)
 {
     ajoute(liste,valeur);
 }
 
+int retire_file(DynaTableau* liste)
 //int retire_file(Liste* liste)
-int retire_file(Liste* liste)
 {
-    int res = liste->premier->donnee;
-    liste->premier = liste->premier->suivant;
-    return res;
-}
+    // int res = liste->premier->donnee;
+    // liste->premier = liste->premier->suivant;
+    // return res;
 
-//void pousse_pile(DynaTableau* liste, int valeur)
-void pousse_pile(Liste* liste, int valeur)
-{
-    ajoute(liste,valeur);
-}
-
-//int retire_pile(DynaTableau* liste)
-int retire_pile(Liste* liste)
-{
-    if (liste->premier == nullptr) {
+    if (liste->nb == 0) {
         return -1;
     }
-    else if (liste->premier->suivant == nullptr) {
-        int res = liste->premier->donnee;
-        delete liste->premier;
-        liste->premier = nullptr;
-        return res;
+    int res = liste->donnees[0];
+    liste->nb--;
+    for (int i=0 ; i<liste->nb ; i++) {
+        liste->donnees[i] = liste->donnees[i+1];
     }
-    else if (liste->premier->suivant->suivant == nullptr) {
-        int res = liste->premier->suivant->donnee;
-        delete liste->premier->suivant;
-        liste->premier->suivant = nullptr;
-        return res;
-    }
-    int res;
-    Noeud * auxFollow = liste->premier;
-    Noeud * aux = liste->premier->suivant;
-    while (aux->suivant != nullptr) {
-        aux = aux->suivant;
-        auxFollow = auxFollow->suivant;
-    }
-    res = aux->donnee;
-    delete aux;
-    auxFollow->suivant = nullptr;
     return res;
+}
+
+void pousse_pile(DynaTableau* liste, int valeur)
+//void pousse_pile(Liste* liste, int valeur)
+{
+    ajoute(liste,valeur);
+}
+
+int retire_pile(DynaTableau* liste)
+//int retire_pile(Liste* liste)
+{
+    // if (liste->premier == nullptr) {
+    //     return -1;
+    // }
+    // else if (liste->premier->suivant == nullptr) {
+    //     int res = liste->premier->donnee;
+    //     delete liste->premier;
+    //     liste->premier = nullptr;
+    //     return res;
+    // }
+    // else if (liste->premier->suivant->suivant == nullptr) {
+    //     int res = liste->premier->suivant->donnee;
+    //     delete liste->premier->suivant;
+    //     liste->premier->suivant = nullptr;
+    //     return res;
+    // }
+    // int res;
+    // Noeud * auxFollow = liste->premier;
+    // Noeud * aux = liste->premier->suivant;
+    // while (aux->suivant != nullptr) {
+    //     aux = aux->suivant;
+    //     auxFollow = auxFollow->suivant;
+    // }
+    // res = aux->donnee;
+    // delete aux;
+    // auxFollow->suivant = nullptr;
+    // return res;
+
+    if (liste->nb == 0) {
+        return -1;
+    }
+    liste->nb--;
+    return liste->donnees[liste->nb];
 }
 
 
@@ -279,11 +295,15 @@ int main()
     affiche(&tableau);
     std::cout << std::endl;
 
-    Liste pile; // DynaTableau pile;
-    Liste file; // DynaTableau file;
+    // Liste pile;
+    // Liste file;
 
-    initialise(&pile);
-    initialise(&file);
+    DynaTableau pile;
+    DynaTableau file;
+    // initialise(&pile);
+    // initialise(&file);
+    initialise(&pile,7);
+    initialise(&file,7);
 
     for (int i=1; i<=7; i++) {
         pousse_file(&file, i);
