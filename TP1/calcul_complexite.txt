@@ -1,0 +1,14 @@
+Algorithme 5 :
+O(n^2)
+
+Algorithme 6 :
+O(min(n,m))
+
+Algorithme 7 :
+O(log2(n))
+
+Algorithme 8 :
+O(log2(n) + iMax-iMin)
+
+Algorithme 9 :
+O(n)

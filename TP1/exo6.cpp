@@ -85,7 +85,7 @@ int cherche(const Liste* liste, int valeur)
         aux = aux->suivant;
         i++;
         bool trouve = (aux->donnee == valeur);
-        cout << aux->donnee << " " << valeur << " " << trouve << endl;
+        //cout << aux->donnee << " " << valeur << " " << (aux->suivant != nullptr && !(trouve)) << endl;
     }
     if (trouve) {
         return i;
@@ -179,25 +179,52 @@ void stocke(DynaTableau* tableau, int n, int valeur)
 //void pousse_file(DynaTableau* liste, int valeur)
 void pousse_file(Liste* liste, int valeur)
 {
-
+    ajoute(liste,valeur);
 }
 
 //int retire_file(Liste* liste)
 int retire_file(Liste* liste)
 {
-    return 0;
+    int res = liste->premier->donnee;
+    liste->premier = liste->premier->suivant;
+    return res;
 }
 
 //void pousse_pile(DynaTableau* liste, int valeur)
 void pousse_pile(Liste* liste, int valeur)
 {
-
+    ajoute(liste,valeur);
 }
 
 //int retire_pile(DynaTableau* liste)
 int retire_pile(Liste* liste)
 {
-    return 0;
+    if (liste->premier == nullptr) {
+        return -1;
+    }
+    else if (liste->premier->suivant == nullptr) {
+        int res = liste->premier->donnee;
+        delete liste->premier;
+        liste->premier = nullptr;
+        return res;
+    }
+    else if (liste->premier->suivant->suivant == nullptr) {
+        int res = liste->premier->suivant->donnee;
+        delete liste->premier->suivant;
+        liste->premier->suivant = nullptr;
+        return res;
+    }
+    int res;
+    Noeud * auxFollow = liste->premier;
+    Noeud * aux = liste->premier->suivant;
+    while (aux->suivant != nullptr) {
+        aux = aux->suivant;
+        auxFollow = auxFollow->suivant;
+    }
+    res = aux->donnee;
+    delete aux;
+    auxFollow->suivant = nullptr;
+    return res;
 }
 
 
