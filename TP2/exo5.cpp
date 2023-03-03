@@ -62,7 +62,18 @@ void exchange(int array[], int i, int j) {
 void merge(int first[], int second[], int result[], int sizeFirst, int sizeSecond)
 {
 	int indexFirst = 0, indexSecond = 0;
-	for (int i=0 ; i<sizeFirst+sizeSecond ; i++) {
+	cout << "-- merge --" << endl;
+	printArray(first,sizeFirst);
+	printArray(second,sizeSecond);
+	/*for (int i=0 ; i<sizeFirst+sizeSecond ; i++) {
+		if (indexFirst == sizeFirst && indexSecond < sizeSecond) {
+			result[i] = second[indexSecond];
+			indexSecond++;
+		}
+		else if (indexFirst < sizeFirst && indexSecond == sizeSecond) {
+			result[i] = first[indexFirst];
+			indexFirst++;
+		}
 		if (first[indexFirst] < second[indexSecond]) {
 			result[i] = first[indexFirst];
 			indexFirst++;
@@ -71,6 +82,26 @@ void merge(int first[], int second[], int result[], int sizeFirst, int sizeSecon
 			result[i] = second[indexSecond];
 			indexSecond++;
 		}
+	}*/
+	while (indexFirst < sizeFirst && indexSecond < sizeSecond) {
+		if (first[indexFirst] <= second[indexSecond]) {
+			result[indexFirst+indexSecond] = first[indexFirst];
+			indexFirst++;
+		}
+		else {
+			result[indexFirst+indexSecond] = second[indexSecond];
+			indexSecond++;
+		}
+	}
+	if (indexFirst < sizeFirst) {
+		for (int i=indexFirst ; i<sizeFirst ; i++) {
+			result[indexFirst+indexSecond] = first[indexFirst];
+		}
+	}
+	else if (indexSecond < sizeSecond) {
+		for (int i=indexSecond ; i<sizeSecond ; i++) {
+			result[indexFirst+indexSecond] = second[indexSecond];
+		}	
 	}
 }
 
@@ -80,11 +111,6 @@ void splitAndMerge(int origin[], int size)
 
 	if (size == 1) {
 		return;
-	}
-	else if (size == 2) {
-		if (origin[0] > origin[1]) {
-			exchange(origin,0,1);
-		}
 	}
 	else {
 		int first[size/2];
@@ -97,10 +123,14 @@ void splitAndMerge(int origin[], int size)
 				second[i-size/2] = origin[i];
 			}
 		}
+		cout << "-- split --" << endl;
+		printArray(first,size/2);
+		printArray(second,size-size/2);
 		splitAndMerge(first,size/2);
-		splitAndMerge(first,size-size/2);
+		splitAndMerge(second,size-size/2);
 
 		merge(first,second,origin,size/2,size-size/2);
+		printArray(origin,size);
 	}
 
 	// initialisation
