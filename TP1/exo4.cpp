@@ -39,9 +39,20 @@ void allEvens(int evens[], int array[], int evenSize, int arraySize)  {
     }
 }
 
+void printArray(int array[],int size) {
+    cout << "- ";
+    for (int i=0; i<size; i++)
+    {
+        cout << array[i] << " - ";
+    }
+    cout << endl;
+}
+
 int main(int argc, char *argv[]) {
 
-    // int array[5] = {2,6,4,89,1};
+    int array[5] = {2,6,89,1,4};
+    int evens[5];
+    allEvens(evens,array,0,5);
 
-    // cout << search(atoi(argv[1]),array,5) << endl;
+    printArray(evens,3);
 }
