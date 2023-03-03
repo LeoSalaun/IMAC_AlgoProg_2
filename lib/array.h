@@ -17,7 +17,7 @@
 #include <stdexcept>
 
 #include "mainwindow.h"
-
+#include "utils.h"
 
 template<typename ... Args>
 std::string string_format( const std::string& format, Args ... args )
