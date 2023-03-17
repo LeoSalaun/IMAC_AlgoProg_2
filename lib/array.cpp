@@ -73,6 +73,12 @@ size_t Array::effectiveSize() const
     return size;
 }
 
+void Array::fill(const int value)
+{
+    for (size_t i=0; i<size(); ++i)
+        _data[i] = value;
+}
+
 void Array::fillRandom(const int min, const int max)
 {
     const int _max = max - min;

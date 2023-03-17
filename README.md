@@ -36,7 +36,7 @@ to sign up and is really heavy, so I choose to put links to an older version of 
 
 A tutorial has been done for macOS by a Student Sara Lafleur
 
-[Installation_MacOS_QtCreator.pdf](docs/FInstallation_MacOS_QtCreator.pdf)
+[Installation_MacOS_QtCreator.pdf](docs/Installation_MacOS_QtCreator.pdf)
 
 ## RUN
 
