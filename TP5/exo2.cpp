@@ -1,5 +1,6 @@
 #include <time.h>
 #include <stdio.h>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -92,6 +93,7 @@ int main(int argc, char *argv[])
 {
     srand(time(NULL));
 	Map map;
+    std::vector<std::string> inserted;
 
     map.insert("Yolo", 20);
     for (std::string& name : names)
@@ -99,6 +101,7 @@ int main(int argc, char *argv[])
         if (rand() % 3 == 0)
         {
             map.insert(name, rand() % 21);
+            inserted.push_back(name);
         }
     }
 
