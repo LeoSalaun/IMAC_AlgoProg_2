@@ -157,7 +157,69 @@ bool CircumCircle(
 
 void construitVoronoi(Application &app)
 {
-    
+    std::sort(app.points.begin(), app.points.end(), compareCoords);
+
+    app.triangles.clear();
+
+    Triangle t;
+    t.p1.x = -1000;
+    t.p1.y = -1000;
+    t.p2.x = 500;
+    t.p2.y = 3000;
+    t.p3.x = 1500;
+    t.p3.y = -1000;
+    app.triangles.insert(app.triangles.end(),t);
+
+    float rsqr,cx,cy;
+    Segment s1,s2,s3;
+    Triangle t2;
+
+    for (int i=0 ; i<app.points.size() ; i++) {
+        std::vector<Segment> ls;
+        for (int j=0 ; j<app.triangles.size() ; j++) {
+            if (CircumCircle(app.points[i].x,app.points[i].y,
+                            app.triangles[j].p1.x,app.triangles[j].p1.y,
+                            app.triangles[j].p2.x,app.triangles[j].p2.y,
+                            app.triangles[j].p3.x,app.triangles[j].p3.y,
+                            &cx,&cy,&rsqr)) {
+                
+                s1.p1.x = app.triangles[j].p1.x;
+                s1.p1.y = app.triangles[j].p1.y;
+                s1.p2.x = app.triangles[j].p2.x;
+                s1.p2.y = app.triangles[j].p2.y;
+                
+                s2.p1.x = app.triangles[j].p1.x;
+                s2.p1.y = app.triangles[j].p1.y;
+                s2.p2.x = app.triangles[j].p3.x;
+                s2.p2.y = app.triangles[j].p3.y;
+                
+                s3.p1.x = app.triangles[j].p3.x;
+                s3.p1.y = app.triangles[j].p3.y;
+                s3.p2.x = app.triangles[j].p2.x;
+                s3.p2.y = app.triangles[j].p2.y;
+
+                ls.insert(ls.end(),s1);
+                ls.insert(ls.end(),s2);
+                ls.insert(ls.end(),s3);
+
+                app.triangles.erase(app.triangles.begin()+j);
+                j--;
+            }
+        }
+
+        for (int s=0 ; s<ls.size() ; s++) {
+            for (int s2 = 0 ; s2<ls.size() ; s2++) {
+                if ((s2 != s) &&  (ls[s].p1 == ls[s2].p2) && (ls[s].p2 == ls[s2].p1)) {
+                    ls.erase(ls.begin()+s2);
+                    s2--;
+                }
+            }
+            t2.p1 = ls[s].p1;
+            t2.p2 = ls[s].p2;
+            t2.p3 = app.points[i];
+            app.triangles.push_back(t2);
+        }
+    }
 }
 
 bool handleEvent(Application &app)
@@ -226,6 +288,9 @@ int main(int argc, char **argv)
         SDL_RenderClear(renderer);
 
         // DESSIN
+
+        
+
         draw(renderer, app);
 
         // VALIDATION FRAME
