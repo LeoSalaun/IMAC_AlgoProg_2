@@ -58,23 +58,23 @@ void exchange(int array[], int i, int j) {
 void quickSort(int array[],int size){
 	//printArray(array,size);
 	if (size > 1) {
-		int pivot = size/2, size1 = 0, size2 = 0;
+		int pivot = size/2, size1 = 0, size2 = 0, i;
 
 		//cout << pivot << " -> " << array[pivot] << endl;
 
 		int array1[size];
 		int array2[size];
 
-		for (int i=0 ; i<size ; i++) {
-			if (array[i] <= array[pivot]) {
+		for (i=0 ; i<size ; i++) {
+			if (i <= pivot) {
 				array1[size1] = array[i];
+				cout << i << " - size1 : " << size1 << endl;
 				size1++;
-				//cout << "coucou" << endl;
 			}
 			else {
 				array2[size2] = array[i];
+				cout << i << " - size2 : " << size2 << endl;
 				size2++;
-				cout << "hello" << endl;
 			}
 		}
 		//cout << size << " - " << size1 << " - " << size2 << endl;
@@ -82,7 +82,7 @@ void quickSort(int array[],int size){
 		quickSort(array1,size1);
 		quickSort(array2,size2);
 
-		for (int i=0 ; i<size ; i++) {
+		for (i=0 ; i<size ; i++) {
 			if (i<=size1) {
 				array[i] = array1[i];
 			}

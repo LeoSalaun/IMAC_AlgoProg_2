@@ -147,16 +147,12 @@ void binarySearchAll(int array[], int size, int toSearch,  int* indexMin, int* i
 	if (trouve) {
 		*indexMin = milieu;
 		*indexMax = milieu;
-		int i= milieu;
-		while (array[i-1] == toSearch && i-1>0) {
-			i--;
+		while (array[(*indexMin)-1] == toSearch && (*indexMin)-1>0) {
+			(*indexMin)--;
 		}
-		*indexMin = i;
-		i = milieu;
-		while (array[i+1] == toSearch && i+1<size) {
-			i++;
+		while (array[(*indexMax)+1] == toSearch && (*indexMax)+1<size) {
+			(*indexMax)++;
 		}
-		*indexMax = i;
 	}
 	else {
 		*indexMin = -1;

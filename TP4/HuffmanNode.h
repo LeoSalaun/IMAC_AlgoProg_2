@@ -1,12 +1,9 @@
 #ifndef HUFFMANNNODE_H
 #define HUFFMANNNODE_H
 
-#include <QString>
+#include <string>
 
-#include "binarytree.h"
-#include "array.h"
-
-struct HuffmanNode : public Node
+struct HuffmanNode
 {
     HuffmanNode* left;
     HuffmanNode* right;
@@ -15,7 +12,7 @@ struct HuffmanNode : public Node
     unsigned char character;
     std::string code;
 
-    HuffmanNode(unsigned char c='\0', int frequences=0) : Node(frequences)
+    HuffmanNode(unsigned char c='\0', int frequences=0)
     {
         this->frequences = frequences;
         this->character = c;
@@ -23,7 +20,7 @@ struct HuffmanNode : public Node
         this->left = this->right = NULL;
     }
 
-    HuffmanNode(const HuffmanNode& node): Node(node)
+    HuffmanNode(const HuffmanNode& node)
     {
         this->frequences = node.frequences;
         this->character = node.character;
@@ -37,15 +34,9 @@ struct HuffmanNode : public Node
     void processCodes(const std::string &baseCode);
     void fillCharactersArray(std::string nodes_for_chars[]);
 
-
-    virtual ~HuffmanNode() {}
-    virtual QString toString() const override
-        {return QString("%1:\n%2").arg(QString(character)).arg(frequences);}
-    Node* get_left_child() const override {return left;};
-    Node* get_right_child() const override {return right;};
 };
 
-
+/*
 class HuffmanHeap : public TemplateArray<HuffmanNode*>
 {
 public:
@@ -99,6 +90,6 @@ protected:
     void insert(const int index, const ElementType& value) {
         // Base::insert(index, value);
     }
-};
+};*/
 
 #endif // HUFFMANNNODE_H

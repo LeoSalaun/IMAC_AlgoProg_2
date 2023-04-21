@@ -55,50 +55,36 @@ struct SearchTreeNode
         }
     }
 
-	int height() const	{
+	int height() {
         // should return the maximum height between left child and
         // right child +1 for itself. If there is no child, return
         // just 1
-        if (this->right == nullptr && this->left == nullptr) {
-            return 1;
-        }
 
-        int heightRight, heightLeft;
+        int heightRight = 0, heightLeft = 0;
         if (this->right != nullptr) {
-            int heightRight = this->right->height();
-        }
-        else {
-            heightRight = 0;
+            heightRight = this->right->height();
         }
         if (this->left != nullptr) {
-            int heightLeft = this->left->height();
+            heightLeft = this->left->height();
         }
-        else {
-            heightLeft = 0;
-        }
-        
+
         return 1 + max(heightRight,heightLeft);  // MAX À DÉFINIR
     }
 
-	int nodesCount() const {
+	int nodesCount() {
         // should return the sum of nodes within left child and
         // right child +1 for itself. If there is no child, return
         // just 1
-        int heightRight, heightLeft;
+
+        int countRight = 0, countLeft = 0;
         if (this->right != nullptr) {
-            int heightRight = this->right->height();
-        }
-        else {
-            heightRight = 0;
+            countRight = this->right->nodesCount();
         }
         if (this->left != nullptr) {
-            int heightLeft = this->left->height();
-        }
-        else {
-            heightLeft = 0;
+            countLeft = this->left->nodesCount();
         }
 
-        return 1 + heightRight + heightLeft;
+        return 1 + countRight + countLeft;
 	}
 
 	bool isLeaf() const {
@@ -250,7 +236,9 @@ int main(int argc, char *argv[])
 
     stn->print(0);
 
-    cout << endl << stn->nodesCount() << endl;
+    cout << endl << "Height : " << stn->height() << endl;
+
+    cout << endl << "Nodes : " << stn->nodesCount() << endl << endl;
 
     SearchTreeNode* array[10];
 
@@ -280,10 +268,4 @@ int main(int argc, char *argv[])
     else {
         cout << "trouvé" << endl;
     }
-
-    /*
-    
-    À RETRAVAILLER : HEIGHT, NODECOUNT, INORDER
-
-    */
 }

@@ -1,8 +1,8 @@
-#include "tp6.h"
-#include <QApplication>
 #include <time.h>
+#include "../lib/graph.h"
+#include <iostream>
+#include <cstdlib>
 
-MainWindow* w = nullptr;
 
 void Graph::buildFromAdjenciesMatrix(int **adjacencies, int nodeCount)
 {
@@ -12,6 +12,15 @@ void Graph::buildFromAdjenciesMatrix(int **adjacencies, int nodeCount)
 	  * this->appendNewNode
 	  * this->nodes[i]->appendNewEdge
 	  */
+
+	 for (int i=0 ; i<nodeCount ; i++) {
+		this->appendNewNode(new GraphNode(i));
+		for (int j=0 ; j<nodeCount ; j++) {
+			if (adjacencies[i,j] > 0) {
+				this->nodes[i]->appendNewEdge(this->nodes[j],*adjacencies[i,j]);
+			}
+		}
+	 }
 }
 
 void Graph::deepTravel(GraphNode *first, GraphNode *nodes[], int &nodesSize, bool visited[])
@@ -19,7 +28,17 @@ void Graph::deepTravel(GraphNode *first, GraphNode *nodes[], int &nodesSize, boo
 	/**
 	  * Fill nodes array by travelling graph starting from first and using recursivity
 	  */
-
+	
+	visited[first->value] = true;
+	nodes[nodesSize] = first;
+	nodesSize++;
+	Edge* edge = first->edges;
+	while (edge != nullptr) {
+		if (!(visited[edge->destination->value])) {
+			this->deepTravel(edge->destination,nodes,nodesSize,visited);
+		}
+		edge = edge->next;
+	}
 }
 
 void Graph::wideTravel(GraphNode *first, GraphNode *nodes[], int &nodesSize, bool visited[])
@@ -45,12 +64,40 @@ bool Graph::detectCycle(GraphNode *first, bool visited[])
     return false;
 }
 
+void drawMatrix(int** matrix, int n) {
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            std::cout << matrix[i][j] << '\t';
+        }
+        std::cout << '\n';
+    }
+}
+
 int main(int argc, char *argv[])
 {
-	QApplication a(argc, argv);
-	MainWindow::instruction_duration = 150;
-	w = new GraphWindow();
-	w->show();
+	int n=7;
+    int** matrix = new int*[n];
+    for (int i=0; i<n; ++i)
+	{
+        matrix[i] = new int[n];
+        for (int j=0; j<n; ++j)
+		{
+			matrix[i][j] = (rand() % 300 - 230) / 2;
+			if (matrix[i][j] < 0)
+				matrix[i][j] = 0;
+		}
+	}
 
-	return a.exec();
+	drawMatrix(matrix,n);
+
+	Graph * graph = new Graph(n);
+	graph->buildFromAdjenciesMatrix(matrix,n);
+
+	GraphNode * nodes[0];
+	bool visited[n] = {false,false,false,false,false,false,false};
+
+	graph->deepTravel(graph->nodes[0],nodes,0,visited);
+
+
+	return 0;
 }
