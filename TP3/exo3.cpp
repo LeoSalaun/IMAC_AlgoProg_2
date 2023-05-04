@@ -191,6 +191,325 @@ struct SearchTreeNode
         }
     }
 
+    SearchTreeNode * rightRotate() {
+        SearchTreeNode * leftNode = this->left;
+        this->left = leftNode->right;
+        leftNode->right = this;
+        return leftNode;
+    }
+
+    SearchTreeNode * leftRotate() {
+        SearchTreeNode * rightNode = this->right;
+        this->right = rightNode->left;
+        rightNode->left = this;
+        return rightNode;
+    }
+
+    // void balance(SearchTreeNode * node) {
+    //     int balance;
+    //     if (node->right == nullptr && node->left != nullptr) {
+    //         balance = -node->left->height();
+    //     }
+    //     else if (node->right != nullptr && node->left == nullptr) {
+    //         balance = node->right->height();
+    //     }
+    //     else if (node->right != nullptr && node->left != nullptr) {
+    //         balance = node->right->height() - node->left->height();
+    //     }
+    //     else if (node->right != nullptr && node->left == nullptr) {
+    //         balance = 0;
+    //     }
+
+    //     SearchTreeNode* balanceNode;
+
+    //     switch (balance)
+    //     {
+    //     case -2 :
+    //         balanceNode = node->left;
+    //         if (balanceNode->right == nullptr && balanceNode->left != nullptr) {
+    //             balance = -balanceNode->left->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left == nullptr) {
+    //             balance = balanceNode->right->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left != nullptr) {
+    //             balance = balanceNode->right->height() - balanceNode->left->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left == nullptr) {
+    //             balance = 0;
+    //         }
+
+    //         switch (balance)
+    //         {
+    //         case -1 :
+    //             node = node->rightRotate();
+    //             break;
+    //         case 1 :
+    //             node->left = balanceNode->leftRotate();
+    //             node = node->rightRotate();
+    //             break;
+    //         }
+    //         break;
+    //     case 2 :
+    //         balanceNode = node->right;
+    //         if (balanceNode->right == nullptr && balanceNode->left != nullptr) {
+    //             balance = -balanceNode->left->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left == nullptr) {
+    //             balance = balanceNode->right->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left != nullptr) {
+    //             balance = balanceNode->right->height() - balanceNode->left->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left == nullptr) {
+    //             balance = 0;
+    //         }
+
+    //         switch (balance)
+    //         {
+    //         case -1 :
+    //             node->right = balanceNode->rightRotate();
+    //             node = node->leftRotate();
+    //             break;
+    //         case 1 :
+    //             node = node->leftRotate();
+    //             break;
+    //         }
+    //         break;
+    //     }
+    // }
+
+    SearchTreeNode* balance(SearchTreeNode * node) {
+        int leftHeight = -1, rightHeight = -1;
+        if (node->left != nullptr) {
+            leftHeight = node->left->height();
+        }
+        if (node->right != nullptr) {
+            rightHeight = node->right->height();
+        }
+
+        int balanceFactor = rightHeight - leftHeight;
+
+        switch (balanceFactor)
+        {
+        case -2:
+            {
+                int leftLeftHeight = -1, leftRightHeight = -1;
+                if (node->left->left != nullptr) {
+                    leftLeftHeight = node->left->left->height();
+                }
+                if (node->left->right != nullptr) {
+                    leftRightHeight = node->left->right->height();
+                }
+
+                int balanceFactorLeft = leftRightHeight - leftLeftHeight;
+
+                if (balanceFactorLeft > 0) {
+                    node->left = node->left->leftRotate();
+                }
+                return node->rightRotate();
+                break;
+            }
+        
+        case 2:
+            {
+                int rightLeftHeight = -1, rightRightHeight = -1;
+                if (node->right->left != nullptr) {
+                    rightLeftHeight = node->right->left->height();
+                }
+                if (node->right->right != nullptr) {
+                    rightRightHeight = node->right->right->height();
+                }
+
+                int balanceFactorRight = rightRightHeight - rightLeftHeight;
+
+                if (balanceFactorRight < 0) {
+                    node->right = node->right->rightRotate();
+                }
+                return node->leftRotate();
+                break;
+            }
+        }
+        return 0;
+    }
+
+    // void balanceRight() {
+    //     int balance;
+    //     if (this->right->right == nullptr && this->right->left != nullptr) {
+    //         balance = -this->right->left->height();
+    //     }
+    //     else if (this->right->right != nullptr && this->right->left == nullptr) {
+    //         balance = this->right->right->height();
+    //     }
+    //     else if (this->right->right != nullptr && this->right->left != nullptr) {
+    //         balance = this->right->right->height() - this->right->left->height();
+    //     }
+    //     else if (this->right->right != nullptr && this->right->left == nullptr) {
+    //         balance = 0;
+    //     }
+
+    //     SearchTreeNode* balanceNode;
+
+    //     switch (balance)
+    //     {
+    //     case -2 :
+    //         balanceNode = this->right->left;
+    //         if (balanceNode->right == nullptr && balanceNode->left != nullptr) {
+    //             balance = -balanceNode->left->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left == nullptr) {
+    //             balance = balanceNode->right->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left != nullptr) {
+    //             balance = balanceNode->right->height() - balanceNode->left->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left == nullptr) {
+    //             balance = 0;
+    //         }
+
+    //         switch (balance)
+    //         {
+    //         case -1 :
+    //             this->right->left = balanceNode->rightRotate();
+    //             break;
+    //         case 1 :
+    //             this->right->left = balanceNode->leftRotate();
+    //             this->right = this->right->rightRotate();
+    //             break;
+    //         }
+    //         break;
+    //     case 2 :
+    //         balanceNode = this->right->right;
+    //         if (balanceNode->right == nullptr && balanceNode->left != nullptr) {
+    //             balance = -balanceNode->left->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left == nullptr) {
+    //             balance = balanceNode->right->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left != nullptr) {
+    //             balance = balanceNode->right->height() - balanceNode->left->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left == nullptr) {
+    //             balance = 0;
+    //         }
+
+    //         switch (balance)
+    //         {
+    //         case -1 :
+    //             this->right->right = balanceNode->rightRotate();
+    //             this->right = this->right->leftRotate();
+    //             break;
+    //         case 1 :
+    //             this->right->right = balanceNode->leftRotate();
+    //             break;
+    //         }
+    //         break;
+    //     }
+    // }
+
+    // void balanceLeft() {
+    //     int balance;
+    //     if (this->left->right == nullptr && this->left->left != nullptr) {
+    //         balance = -this->left->left->height();
+    //     }
+    //     else if (this->left->right != nullptr && this->left->left == nullptr) {
+    //         balance = this->left->right->height();
+    //     }
+    //     else if (this->left->right != nullptr && this->left->left != nullptr) {
+    //         balance = this->left->right->height() - this->left->left->height();
+    //     }
+    //     else if (this->left->right != nullptr && this->left->left == nullptr) {
+    //         balance = 0;
+    //     }
+
+    //     SearchTreeNode* balanceNode;
+
+    //     switch (balance)
+    //     {
+    //     case -2 :
+    //         balanceNode = this->left->left;
+    //         if (balanceNode->right == nullptr && balanceNode->left != nullptr) {
+    //             balance = -balanceNode->left->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left == nullptr) {
+    //             balance = balanceNode->right->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left != nullptr) {
+    //             balance = balanceNode->right->height() - balanceNode->left->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left == nullptr) {
+    //             balance = 0;
+    //         }
+
+    //         switch (balance)
+    //         {
+    //         case -1 :
+    //             this->left->left = balanceNode->rightRotate();
+    //             break;
+    //         case 1 :
+    //             this->left->left = balanceNode->leftRotate();
+    //             this->left = this->left->rightRotate();
+    //             break;
+    //         }
+    //         break;
+    //     case 2 :
+    //         balanceNode = this->left->right;
+    //         if (balanceNode->right == nullptr && balanceNode->left != nullptr) {
+    //             balance = -balanceNode->left->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left == nullptr) {
+    //             balance = balanceNode->right->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left != nullptr) {
+    //             balance = balanceNode->right->height() - balanceNode->left->height();
+    //         }
+    //         else if (balanceNode->right != nullptr && balanceNode->left == nullptr) {
+    //             balance = 0;
+    //         }
+
+    //         switch (balance)
+    //         {
+    //         case -1 :
+    //             this->left->right = balanceNode->rightRotate();
+    //             this->left = this->left->leftRotate();
+    //             break;
+    //         case 1 :
+    //             this->left->right = balanceNode->leftRotate();
+    //             break;
+    //         }
+    //         break;
+    //     }
+    // }
+
+    SearchTreeNode* insertNumberBalanced(int value) {
+        // create a new node and insert in the tree while keeping it balanced
+        if (value >= this->value) {
+            if (this->right == nullptr) {
+                this->right = new SearchTreeNode(value);
+            }
+            else {
+                this->right = this->right->insertNumberBalanced(value);
+            }
+        }
+        else {
+            if (this->left == nullptr) {
+                this->left = new SearchTreeNode(value);
+            }
+            else {
+                this->left = this->left->insertNumberBalanced(value);
+            }
+        }
+        
+        // if (this->right->height() - this->left->height() >= 2) {
+        //     this->balanceRight();
+        // }
+        // else if (this->right->height() - this->left->height() <= -2) {
+        //     this->balanceLeft();
+        // }
+
+        return this->balance(this);
+    }
+
     SearchTreeNode(int value) {initNode(value);}
     ~SearchTreeNode() {}
     int get_value() const {return value;}
@@ -201,8 +520,6 @@ struct SearchTreeNode
 SearchTreeNode* createNode(int value) {
     return new SearchTreeNode(value);
 }
-
-
 
 void printArray(SearchTreeNode * array[],int size) {
     cout << "- ";
@@ -229,7 +546,7 @@ int main(int argc, char *argv[])
     cout << "init ok" << endl;
 
     for (int i=0 ; i<9 ; i++) {
-        stn->insertNumber(rand()%20);
+        stn = stn->insertNumberBalanced(rand()%20);
     }
 
     cout << "insert ok" << endl;

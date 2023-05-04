@@ -51,5 +51,6 @@
         "thread": "cpp",
         "typeinfo": "cpp"
     },
-    "cmake.sourceDirectory": "${workspaceFolder}/Voronoi_delaunay"
+    "cmake.sourceDirectory": "${workspaceFolder}/Voronoi_delaunay",
+    "C_Cpp.errorSquiggles": "disabled"
 }

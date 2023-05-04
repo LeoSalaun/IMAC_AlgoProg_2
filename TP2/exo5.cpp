@@ -83,17 +83,17 @@ void merge(int first[], int second[], int result[], int sizeFirst, int sizeSecon
 			indexSecond++;
 		}
 	}*/
-	while (indexFirst < sizeFirst && indexSecond < sizeSecond) {
-		if (first[indexFirst] <= second[indexSecond]) {
+	while (indexFirst < sizeFirst || indexSecond < sizeSecond) {
+		if (first[indexFirst] <= second[indexSecond] && indexFirst < sizeFirst) {
 			result[indexFirst+indexSecond] = first[indexFirst];
 			indexFirst++;
 		}
-		else {
+		else if (indexSecond < sizeSecond) {
 			result[indexFirst+indexSecond] = second[indexSecond];
 			indexSecond++;
 		}
 	}
-	if (indexFirst < sizeFirst) {
+	/*if (indexFirst < sizeFirst) {
 		for (int i=indexFirst ; i<sizeFirst ; i++) {
 			result[indexFirst+indexSecond] = first[indexFirst];
 		}
@@ -102,7 +102,7 @@ void merge(int first[], int second[], int result[], int sizeFirst, int sizeSecon
 		for (int i=indexSecond ; i<sizeSecond ; i++) {
 			result[indexFirst+indexSecond] = second[indexSecond];
 		}	
-	}
+	}*/
 }
 
 void splitAndMerge(int origin[], int size)

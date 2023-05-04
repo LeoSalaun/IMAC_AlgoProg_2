@@ -49,25 +49,15 @@ void exchange(int array[], int i, int j) {
 void merge(int first[], int second[], int result[], int sizeFirst, int sizeSecond)
 {
 	int indexFirst = 0, indexSecond = 0;
-	while (indexFirst < sizeFirst && indexSecond < sizeSecond) {
-		if (first[indexFirst] <= second[indexSecond]) {
+	while (indexFirst < sizeFirst || indexSecond < sizeSecond) {
+		if (first[indexFirst] <= second[indexSecond] && indexFirst < sizeFirst) {
 			result[indexFirst+indexSecond] = first[indexFirst];
 			indexFirst++;
 		}
-		else {
+		else if (indexSecond < sizeSecond) {
 			result[indexFirst+indexSecond] = second[indexSecond];
 			indexSecond++;
 		}
-	}
-	if (indexFirst < sizeFirst) {
-		for (int i=indexFirst ; i<sizeFirst ; i++) {
-			result[indexFirst+indexSecond] = first[indexFirst];
-		}
-	}
-	else if (indexSecond < sizeSecond) {
-		for (int i=indexSecond ; i<sizeSecond ; i++) {
-			result[indexFirst+indexSecond] = second[indexSecond];
-		}	
 	}
 }
 
