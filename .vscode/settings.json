@@ -49,7 +49,10 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "thread": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "cinttypes": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/Voronoi_delaunay",
     "C_Cpp.errorSquiggles": "disabled"
