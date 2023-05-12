@@ -168,61 +168,107 @@ void construitVoronoi(Application &app)
     t.p2.y = 3000;
     t.p3.x = 1500;
     t.p3.y = -1000;
-    app.triangles.insert(app.triangles.end(),t);
+    app.triangles.push_back(t);
 
-    float rsqr,cx,cy;
-    Segment s1,s2,s3;
+    float rsqr, cx, cy;
+    Segment s1, s2, s3;
     Triangle t2;
 
-    for (int i=0 ; i<app.points.size() ; i++) {
+    for (int i = 0; i < app.points.size(); i++)
+    {
         std::vector<Segment> ls;
-        for (int j=0 ; j<app.triangles.size() ; j++) {
-            if (CircumCircle(app.points[i].x,app.points[i].y,
-                            app.triangles[j].p1.x,app.triangles[j].p1.y,
-                            app.triangles[j].p2.x,app.triangles[j].p2.y,
-                            app.triangles[j].p3.x,app.triangles[j].p3.y,
-                            &cx,&cy,&rsqr)) {
-                
+        for (int j = 0; j < app.triangles.size(); j++)
+        {
+            if (CircumCircle(app.points[i].x, app.points[i].y,
+                             app.triangles[j].p1.x, app.triangles[j].p1.y,
+                             app.triangles[j].p2.x, app.triangles[j].p2.y,
+                             app.triangles[j].p3.x, app.triangles[j].p3.y,
+                             &cx, &cy, &rsqr))
+            {
+
                 s1.p1.x = app.triangles[j].p1.x;
                 s1.p1.y = app.triangles[j].p1.y;
                 s1.p2.x = app.triangles[j].p2.x;
                 s1.p2.y = app.triangles[j].p2.y;
-                
+
                 s2.p1.x = app.triangles[j].p1.x;
                 s2.p1.y = app.triangles[j].p1.y;
                 s2.p2.x = app.triangles[j].p3.x;
                 s2.p2.y = app.triangles[j].p3.y;
-                
+
                 s3.p1.x = app.triangles[j].p3.x;
                 s3.p1.y = app.triangles[j].p3.y;
                 s3.p2.x = app.triangles[j].p2.x;
                 s3.p2.y = app.triangles[j].p2.y;
 
-                ls.insert(ls.end(),s1);
-                ls.insert(ls.end(),s2);
-                ls.insert(ls.end(),s3);
+                ls.push_back(s1);
+                ls.push_back(s2);
+                ls.push_back(s3);
 
-                app.triangles.erase(app.triangles.begin()+j);
+                app.triangles.erase(app.triangles.begin() + j);
                 j--;
             }
         }
 
-        for (int s=0 ; s<ls.size() ; s++) {
-            for (int s2 = 0 ; s2<ls.size() ; s2++) {
-                if ((s2 != s) &&  (ls[s].p1 == ls[s2].p2) && (ls[s].p2 == ls[s2].p1)) {
-                    ls.erase(ls.begin()+s2);
-                    s2--;
+        for (int s = 0; s < ls.size(); s++)
+        {
+            bool isDuplicate = false;
+            for (int s2 = 0; s2 < ls.size(); s2++)
+            {
+                if (s2 != s && ((ls[s].p1 == ls[s2].p2 && ls[s].p2 == ls[s2].p1) || (ls[s].p1 == ls[s2].p1 && ls[s].p2 == ls[s2].p2)))
+                {
+                    isDuplicate = true;
+                    break;
                 }
             }
-            t2.p1 = ls[s].p1;
-            t2.p2 = ls[s].p2;
-            t2.p3 = app.points[i];
-            app.triangles.push_back(t2);
+            if (!isDuplicate)
+            {
+                t2.p1 = ls[s].p1;
+                t2.p2 = ls[s].p2;
+                t2.p3 = app.points[i];
+                app.triangles.push_back(t2);
+            }
         }
     }
 }
 
-bool handleEvent(Application &app)
+bool partageSegment(Triangle t1, Triangle t2) {
+    return ((t1.p1 == t2.p1 || t1.p1 == t2.p2 || t1.p1 == t2.p3) && (t1.p2 == t2.p1 || t1.p2 == t2.p2 || t1.p2 == t2.p3))
+        || ((t1.p1 == t2.p1 || t1.p1 == t2.p2 || t1.p1 == t2.p3) && (t1.p3 == t2.p1 || t1.p3 == t2.p2 || t1.p3 == t2.p3))
+        || ((t1.p2 == t2.p1 || t1.p2 == t2.p2 || t1.p2 == t2.p3) && (t1.p3 == t2.p1 || t1.p3 == t2.p2 || t1.p3 == t2.p3));
+}
+
+void updateDual(Application &app, std::vector<Coords> &points, std::vector<Segment> &segments) {
+    points.clear();
+    segments.clear();
+
+    for (int t=0 ; t<app.triangles.size() ; t++) {
+        Coords c;
+        float cx,cy,rsqr;
+        CircumCircle(0,0,app.triangles[t].p1.x,app.triangles[t].p1.y,
+                         app.triangles[t].p2.x,app.triangles[t].p2.y,
+                         app.triangles[t].p3.x,app.triangles[t].p3.y,
+                         &cx,&cy,&rsqr);
+        c.x = int(cx);
+        c.y = int(cy);
+        points.push_back(c);
+    }
+    
+    for (int t=0 ; t<app.triangles.size() ; t++) {
+        std::vector<Triangle> adjacents;
+
+        for (int t2=0 ; t2<app.triangles.size() ; t2++) {
+            if (t != t2 && partageSegment(app.triangles[t],app.triangles[t2])) {
+                Segment s;
+                s.p1 = points[t];
+                s.p2 = points[t2];
+                segments.push_back(s);
+            }
+        }
+    }
+}
+
+bool handleEvent(Application &app, std::vector<Coords> &points, std::vector<Segment> &segments)
 {
     /* Remplissez cette fonction pour gérer les inputs utilisateurs */
     SDL_Event e;
@@ -251,6 +297,7 @@ bool handleEvent(Application &app)
                 app.focus.y = 0;
                 app.points.push_back(Coords{e.button.x, e.button.y});
                 construitVoronoi(app);
+                updateDual(app,points,segments);
             }
         }
     }
@@ -263,6 +310,9 @@ int main(int argc, char **argv)
     SDL_Renderer *renderer;
     Application app{720, 720, Coords{0, 0}};
     bool is_running = true;
+
+    std::vector<Coords> points;
+    std::vector<Segment> segments;
 
     // Creation de la fenetre
     gWindow = init("Awesome Voronoi", 720, 720);
@@ -279,7 +329,7 @@ int main(int argc, char **argv)
     while (true)
     {
         // INPUTS
-        is_running = handleEvent(app);
+        is_running = handleEvent(app,points,segments);
         if (!is_running)
             break;
 
@@ -289,7 +339,13 @@ int main(int argc, char **argv)
 
         // DESSIN
 
-        
+        for (int p=0 ; p<points.size() ; p++) {
+            pixelRGBA(renderer, points[p].x, points[p].y, 255, 0, 0, 255);
+        }
+
+        for (int s=0 ; s<segments.size() ; s++) {
+            lineRGBA(renderer, segments[s].p1.x, segments[s].p1.y, segments[s].p2.x, segments[s].p2.y, 255, 0, 0, 255);
+        }
 
         draw(renderer, app);
 
