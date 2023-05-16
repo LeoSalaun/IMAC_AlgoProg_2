@@ -29,6 +29,13 @@ struct Triangle
     bool complet=false;
 };
 
+struct Polygone
+{
+    int * vx;
+    int * vy;
+    int number;
+};
+
 struct Application
 {
     int width, height;
@@ -78,6 +85,10 @@ void drawTriangles(SDL_Renderer *renderer, const std::vector<Triangle> &triangle
             0, 240, 160, SDL_ALPHA_OPAQUE
         );
     }
+}
+
+void drawPolygones(SDL_Renderer *renderer, const std::vector<Polygone> &polygones)
+{
 }
 
 void draw(SDL_Renderer *renderer, const Application &app)
@@ -218,7 +229,8 @@ void construitVoronoi(Application &app)
                 if (s2 != s && ((ls[s].p1 == ls[s2].p2 && ls[s].p2 == ls[s2].p1) || (ls[s].p1 == ls[s2].p1 && ls[s].p2 == ls[s2].p2)))
                 {
                     isDuplicate = true;
-                    break;
+                    ls.erase(ls.begin()+s2);
+                    s2--;
                 }
             }
             if (!isDuplicate)
@@ -227,6 +239,10 @@ void construitVoronoi(Application &app)
                 t2.p2 = ls[s].p2;
                 t2.p3 = app.points[i];
                 app.triangles.push_back(t2);
+            }
+            else {
+                ls.erase(ls.begin()+s);
+                s--;
             }
         }
     }
@@ -238,8 +254,37 @@ bool partageSegment(Triangle t1, Triangle t2) {
         || ((t1.p2 == t2.p1 || t1.p2 == t2.p2 || t1.p2 == t2.p3) && (t1.p3 == t2.p1 || t1.p3 == t2.p2 || t1.p3 == t2.p3));
 }
 
-void updateDual(Application &app, std::vector<Coords> &points, std::vector<Segment> &segments) {
-    points.clear();
+void updateDual(Application &app, /*std::vector<Coords> &points, std::vector<Segment> &segments*/ std::vector<Polygone> &polygones) {
+
+    /**
+     * Pour chaque point de app
+     *     créer un nouveau polygone
+     *     pour chaque triangle de app
+     *         si le triangle a le point courant
+     *             ajouter le centre de son cercle circonscrit au polygone
+     * 
+     */
+
+    float cx,cy,rsqr;
+
+    for (int p=0 ; p<app.points.size() ; p++) {
+        Polygone pol;
+        pol.number = 0;
+        for (int t=0 ; t<app.triangles.size() ; t++) {
+            if (app.triangles[t].p1 == app.points[p] || app.triangles[t].p2 == app.points[p] || app.triangles[t].p3 == app.points[p]) {
+                CircumCircle(0,0,app.triangles[t].p1.x,app.triangles[t].p1.y,
+                                 app.triangles[t].p2.x,app.triangles[t].p2.y,
+                                 app.triangles[t].p3.x,app.triangles[t].p3.y,
+                                 &cx,&cy,&rsqr);
+                pol.vx[pol.number] = int(cx);
+                pol.vy[pol.number] = int(cy);
+                pol.number++;
+            }
+        }
+    }
+
+
+    /*points.clear();
     segments.clear();
 
     for (int t=0 ; t<app.triangles.size() ; t++) {
@@ -265,10 +310,10 @@ void updateDual(Application &app, std::vector<Coords> &points, std::vector<Segme
                 segments.push_back(s);
             }
         }
-    }
+    }*/
 }
 
-bool handleEvent(Application &app, std::vector<Coords> &points, std::vector<Segment> &segments)
+bool handleEvent(Application &app, /*std::vector<Coords> &points, std::vector<Segment> &segments*/ std::vector<Polygone> &polygones)
 {
     /* Remplissez cette fonction pour gérer les inputs utilisateurs */
     SDL_Event e;
@@ -297,7 +342,7 @@ bool handleEvent(Application &app, std::vector<Coords> &points, std::vector<Segm
                 app.focus.y = 0;
                 app.points.push_back(Coords{e.button.x, e.button.y});
                 construitVoronoi(app);
-                updateDual(app,points,segments);
+                updateDual(app,/*points,segments*/polygones);
             }
         }
     }
@@ -314,6 +359,8 @@ int main(int argc, char **argv)
     std::vector<Coords> points;
     std::vector<Segment> segments;
 
+    std::vector<Polygone> polygones;
+
     // Creation de la fenetre
     gWindow = init("Awesome Voronoi", 720, 720);
 
@@ -329,7 +376,8 @@ int main(int argc, char **argv)
     while (true)
     {
         // INPUTS
-        is_running = handleEvent(app,points,segments);
+        //is_running = handleEvent(app,points,segments);
+        is_running = handleEvent(app,polygones);
         if (!is_running)
             break;
 
@@ -339,12 +387,16 @@ int main(int argc, char **argv)
 
         // DESSIN
 
-        for (int p=0 ; p<points.size() ; p++) {
+        /*for (int p=0 ; p<points.size() ; p++) {
             pixelRGBA(renderer, points[p].x, points[p].y, 255, 0, 0, 255);
         }
 
         for (int s=0 ; s<segments.size() ; s++) {
             lineRGBA(renderer, segments[s].p1.x, segments[s].p1.y, segments[s].p2.x, segments[s].p2.y, 255, 0, 0, 255);
+        }*/
+
+        for (int p=0 ; p<polygones.size() ; p++) {
+            filledPolygonRGBA(renderer, /*&polygones[p].vx*/, /*&polygones[p].vy*/, polygones[p].number, rand()%256, rand()%256, rand()%256, 255);
         }
 
         draw(renderer, app);
