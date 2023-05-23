@@ -6,6 +6,9 @@
 #include <queue>
 #include <algorithm>
 
+#include <iostream>
+using namespace std;
+
 #define EPSILON 0.0001f
 
 struct Coords
@@ -31,9 +34,10 @@ struct Triangle
 
 struct Polygone
 {
-    int * vx;
-    int * vy;
+    Sint16 vx[20];
+    Sint16 vy[20];
     int number;
+    int colour[3];
 };
 
 struct Application
@@ -254,6 +258,37 @@ bool partageSegment(Triangle t1, Triangle t2) {
         || ((t1.p2 == t2.p1 || t1.p2 == t2.p2 || t1.p2 == t2.p3) && (t1.p3 == t2.p1 || t1.p3 == t2.p2 || t1.p3 == t2.p3));
 }
 
+double getAngleABC(int xA, int yA, int xB, int yB, int xC, int yC) {
+    Coords ba, bc;
+    ba.x = xA-xB;
+    ba.y = yA-yB;
+    bc.x = xC-xB;
+    bc.y = yC-yB;
+
+    double angleBA = atan2(ba.y, ba.x);
+    double angleBC = atan2(bc.y, bc.x);
+
+    return angleBA-angleBC;
+
+    /*int prodScal = ba.x*bc.x + ba.y*bc.y;
+
+    double normBA = sqrt(pow(ba.x,2) + pow(ba.y,2));
+    double normBC = sqrt(pow(bc.x,2) + pow(bc.y,2));
+
+    double cosAngle = prodScal / (normBA*normBC);
+
+
+
+    int cooX = x2-x1, cooY = y2-y1;
+    double angle = acos(-cooY / sqrt(pow(cooX,2) + pow(cooY,2)));
+    if (cooX <= 0) {
+        return angle;
+    }
+    else {
+        return angle+180;
+    }*/
+}
+
 void updateDual(Application &app, /*std::vector<Coords> &points, std::vector<Segment> &segments*/ std::vector<Polygone> &polygones) {
 
     /**
@@ -266,21 +301,38 @@ void updateDual(Application &app, /*std::vector<Coords> &points, std::vector<Seg
      */
 
     float cx,cy,rsqr;
+    polygones.clear();
 
     for (int p=0 ; p<app.points.size() ; p++) {
         Polygone pol;
+        *(pol.vx) = 0;
+        *(pol.vy) = 0;
         pol.number = 0;
+        pol.colour[0] = rand()%256;
+        pol.colour[1] = rand()%256;
+        pol.colour[2] = rand()%256;
         for (int t=0 ; t<app.triangles.size() ; t++) {
-            if (app.triangles[t].p1 == app.points[p] || app.triangles[t].p2 == app.points[p] || app.triangles[t].p3 == app.points[p]) {
+            if ((app.triangles[t].p1 == app.points[p]) || (app.triangles[t].p2 == app.points[p]) || (app.triangles[t].p3 == app.points[p])) {
                 CircumCircle(0,0,app.triangles[t].p1.x,app.triangles[t].p1.y,
                                  app.triangles[t].p2.x,app.triangles[t].p2.y,
                                  app.triangles[t].p3.x,app.triangles[t].p3.y,
                                  &cx,&cy,&rsqr);
-                pol.vx[pol.number] = int(cx);
-                pol.vy[pol.number] = int(cy);
+                int coo = 0;
+                //cout << angleY(app.points[p].x,app.points[p].y,(Sint16) cx,(Sint16) cy) << " - " << angleY(app.points[p].x,app.points[p].y,pol.vx[coo],pol.vx[coo]) << endl;
+                while (coo < pol.number && getAngleABC((Sint16) cx,(Sint16) cy,app.points[p].x,app.points[p].y,pol.vx[coo],pol.vx[coo]) > 0.0) {
+                    
+                    coo++;
+                }
+                for (int i=pol.number-1 ; i>=coo ; i--) {
+                    pol.vx[i+1] = pol.vx[i];
+                    pol.vy[i+1] = pol.vy[i];
+                }
+                pol.vx[coo] = (Sint16) cx;
+                pol.vy[coo] = (Sint16) cy;
                 pol.number++;
             }
         }
+        polygones.push_back(pol);
     }
 
 
@@ -396,7 +448,7 @@ int main(int argc, char **argv)
         }*/
 
         for (int p=0 ; p<polygones.size() ; p++) {
-            filledPolygonRGBA(renderer, /*&polygones[p].vx*/, /*&polygones[p].vy*/, polygones[p].number, rand()%256, rand()%256, rand()%256, 255);
+            filledPolygonRGBA(renderer, polygones[p].vx, polygones[p].vy, polygones[p].number, polygones[p].colour[0], polygones[p].colour[1], polygones[p].colour[2], 255);
         }
 
         draw(renderer, app);

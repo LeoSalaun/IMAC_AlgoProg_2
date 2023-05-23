@@ -15,9 +15,12 @@ void Graph::buildFromAdjenciesMatrix(int **adjacencies, int nodeCount)
 
 	 for (int i=0 ; i<nodeCount ; i++) {
 		this->appendNewNode(new GraphNode(i));
-		for (int j=0 ; j<nodeCount ; j++) {
-			if (adjacencies[i,j] > 0) {
-				this->nodes[i]->appendNewEdge(this->nodes[j],*adjacencies[i,j]);
+		for (int j=0 ; j<=i ; j++) {
+			if (adjacencies[i][j] > 0) {
+				this->nodes[i]->appendNewEdge(this->nodes[j],adjacencies[i][j]);
+			}
+			if (adjacencies[j][i] > 0 && i != j) {
+				this->nodes[j]->appendNewEdge(this->nodes[i],adjacencies[j][i]);
 			}
 		}
 	 }
@@ -35,7 +38,7 @@ void Graph::deepTravel(GraphNode *first, GraphNode *nodes[], int &nodesSize, boo
 	Edge* edge = first->edges;
 	while (edge != nullptr) {
 		if (!(visited[edge->destination->value])) {
-			this->deepTravel(edge->destination,nodes,nodesSize,visited);
+			this->Graph::deepTravel(edge->destination,nodes,nodesSize,visited);
 		}
 		edge = edge->next;
 	}
@@ -50,8 +53,31 @@ void Graph::wideTravel(GraphNode *first, GraphNode *nodes[], int &nodesSize, boo
 	 * nodeQueue.pop() -> remove first node of the queue
 	 * nodeQueue.size() -> size of the queue
 	 */
+
+	if (nodesSize == 0) {
+		visited[first->value] = true;
+		nodes[nodesSize] = first;
+		nodesSize++;
+	}
+
 	std::queue<GraphNode*> nodeQueue;
-	nodeQueue.push(first);
+	//nodeQueue.push(first);
+
+	Edge* edge = first->edges;
+	while (edge != nullptr) {
+		if (!(visited[edge->destination->value])) {
+			nodeQueue.push(edge->destination);
+			visited[edge->destination->value] = true;
+			nodes[nodesSize] = edge->destination;
+			nodesSize++;
+		}
+		edge = edge->next;
+	}
+
+	while (nodeQueue.size() > 0) {
+		this->Graph::wideTravel(nodeQueue.front(),nodes,nodesSize,visited);
+		nodeQueue.pop();
+	}
 }
 
 bool Graph::detectCycle(GraphNode *first, bool visited[])
@@ -61,7 +87,24 @@ bool Graph::detectCycle(GraphNode *first, bool visited[])
 	  (the first may not be in the cycle)
 	  Think about what's happen when you get an already visited node
 	**/
-    return false;
+
+	visited[first->value] = true;
+	Edge* edge = first->edges;
+	bool hasCycle = false;
+
+	while (edge != nullptr && !(hasCycle)) {
+	// 	std::cout << first->value << " -> " << edge->destination->value << std::endl;
+		if (!(visited[edge->destination->value])) {
+			hasCycle = this->Graph::detectCycle(edge->destination,visited);
+			visited[edge->destination->value] = false;
+		}
+		else {
+			hasCycle = true;
+		}
+		edge = edge->next;
+	}
+
+    return hasCycle;
 }
 
 void drawMatrix(int** matrix, int n) {
@@ -75,6 +118,8 @@ void drawMatrix(int** matrix, int n) {
 
 int main(int argc, char *argv[])
 {
+	srand(time(0));
+
 	int n=7;
     int** matrix = new int*[n];
     for (int i=0; i<n; ++i)
@@ -91,13 +136,22 @@ int main(int argc, char *argv[])
 	drawMatrix(matrix,n);
 
 	Graph * graph = new Graph(n);
-	graph->buildFromAdjenciesMatrix(matrix,n);
+	graph->Graph::buildFromAdjenciesMatrix(matrix,n);
 
-	GraphNode * nodes[0];
+	GraphNode ** nodes;
+	int nodeSize = 0;
 	bool visited[n] = {false,false,false,false,false,false,false};
 
-	graph->deepTravel(graph->nodes[0],nodes,0,visited);
+	// graph->Graph::wideTravel(&(graph->Graph::operator[](0)),nodes,nodeSize,visited);
 
+	// std::cout << std::endl;
+
+	// for (int i=0 ; i<nodeSize ; i++) {
+	// 	std::cout << nodes[i]->value << " - ";
+	// }
+	// std::cout << std::endl;
+
+	std::cout << graph->Graph::detectCycle(&(graph->Graph::operator[](0)),visited) << std::endl;
 
 	return 0;
 }
