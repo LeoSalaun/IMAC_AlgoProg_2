@@ -23,12 +23,12 @@ void main_function(HuffmanNode*& huffmanTree)
 
     // this array store each caracter frequences indexed by their ascii code
     std::vector<int> characterFrequences;
-    for (int i = 0 ; i < 256 ; i++){
+    for (int i = 0 ; i < 128 ; i++){
         characterFrequences.push_back(0);
     }
 
     // this array store each caracter code indexed by their ascii code
-    string characterCodes[256];
+    string characterCodes[128];
     std::vector<HuffmanNode*> priorityMinHeap;
     int heapSize = 0;
 
@@ -36,7 +36,7 @@ void main_function(HuffmanNode*& huffmanTree)
     // afficher characterFrequences
 
     std::cout << "processCharFrequences :" << std::endl;
-    for (int i=0 ; i<256 ; i++) {
+    for (int i=0 ; i<128 ; i++) {
         std::cout << char(i) << " -> " << characterFrequences[i] << " | ";
     }
     std::cout << std::endl << std::endl;
@@ -49,23 +49,26 @@ void main_function(HuffmanNode*& huffmanTree)
     for (int i=0 ; i<heapSize ; i++) {
         std::cout << i << " -> " << priorityMinHeap[i]->character << "-" << priorityMinHeap[i]->frequences << " | ";
     }
-    std::cout << std::endl;
+    std::cout << std::endl << std::endl;
 
     huffmanTree = buildHuffmanTree(priorityMinHeap, heapSize);
     huffmanTree->processCodes("");
+    //std::cout << heapSize << std::endl;
 
     HuffmanNode* tmp = huffmanTree;
-    std::cout << huffmanTree->character << std::endl;
+    std::cout << huffmanTree->right->left->character << std::endl;
+    std::cout << "yo" << std::endl;
+
     while (tmp->character == '\0') {
         tmp = tmp->right;
     }
-    std::cout << tmp->right->character << std::endl;
+    std::cout << tmp->character << std::endl;
 
     string encoded = huffmanEncode(data, huffmanTree);
-    string decoded = huffmanDecode(encoded, *huffmanTree);
+    //string decoded = huffmanDecode(encoded, *huffmanTree);
 
     printf("Encoded: %s\n", encoded.c_str());
-    printf("Decoded: %s\n", decoded.c_str());
+    //printf("Decoded: %s\n", decoded.c_str());
 }
 
 
@@ -104,8 +107,13 @@ void insertHeapNode(std::vector<HuffmanNode*> &heap, int &heapSize, HuffmanNode*
      **/
 
     // Your code
-    int i = heapSize-1;
-	heap.push_back(newNode);
+    int i = heapSize;
+    if (heap.size() == heapSize) {
+        heap.push_back(newNode);
+    }
+	else {
+        heap[heapSize] = newNode;
+    }
     
 	while (i>0 && heap[i]->frequences < heap[(i-1)/2]->frequences) {
 		exchange(heap,i,(i-1)/2);
@@ -125,7 +133,7 @@ void buildHuffmanHeap(const std::vector<int>& frequences, std::vector<HuffmanNod
 
     // Your code
     heapSize = 0;
-    for (int i=0 ; i<256 ; i++) {
+    for (int i=0 ; i<128 ; i++) {
 		insertHeapNode(priorityMinHeap,heapSize,new HuffmanNode(char(i),frequences[i]));
 	}
 
@@ -155,7 +163,7 @@ void heapify(std::vector<HuffmanNode*> HuffmanNode, int heapSize, int nodeIndex)
 }
 
 
-HuffmanNode* extractMinNode(std::vector<HuffmanNode*> HuffNode, int &heapSize)
+HuffmanNode* extractMinNode(std::vector<HuffmanNode*> &HuffNode, int &heapSize)
 {
     /**
       * Extract the first cell, replace the first cell with the last one and
@@ -166,9 +174,9 @@ HuffmanNode* extractMinNode(std::vector<HuffmanNode*> HuffNode, int &heapSize)
     // Your code
 
     HuffmanNode *res = HuffNode[0];
-    std::cout << HuffNode[35]->character << std::endl;
     HuffNode[0] = HuffNode[heapSize-1];
     heapify(HuffNode,heapSize-1,0);
+    //std::cout << HuffNode[0]->character << "-" << res->character << std::endl;
     heapSize--;
 
     return res;
@@ -183,11 +191,12 @@ HuffmanNode* makeHuffmanSubTree(HuffmanNode* rightNode, HuffmanNode* leftNode)
      * Return the new HuffmanNode* parent
      **/
     // Your code
-    HuffmanNode* res = new HuffmanNode();
-    res->left = leftNode;
-    res->right = rightNode;
+    HuffmanNode* parent = new HuffmanNode();
+    parent->left = leftNode;
+    parent->right = rightNode;
+    parent->frequences = leftNode->frequences + rightNode->frequences;
     
-    return res;
+    return parent;
 }
 
 HuffmanNode* buildHuffmanTree(std::vector<HuffmanNode*>& priorityMinHeap, int heapSize)
@@ -206,21 +215,24 @@ HuffmanNode* buildHuffmanTree(std::vector<HuffmanNode*>& priorityMinHeap, int he
     HuffmanNode* subtree;
 
     while (heapSize > 1) {
+        //std::cout << heapSize << std::endl;
         leftNode = extractMinNode(priorityMinHeap,heapSize);
         if (heapSize > 0) {
             rightNode = extractMinNode(priorityMinHeap,heapSize);
         }
         else {
-            rightNode = new HuffmanNode();
+            rightNode = nullptr;
         }
         subtree = makeHuffmanSubTree(rightNode,leftNode);
         insertHeapNode(priorityMinHeap,heapSize,subtree);
+        //std::cout << heapSize << std::endl;
         //heapSize--;
         //std::cout << heapSize << std::endl;
         //std::cout << leftNode->character << " - " << subtree->left->character << std::endl;
     }
+    //std::cout << heapSize << std::endl;
 
-    return priorityMinHeap[0];
+    return extractMinNode(priorityMinHeap,heapSize);
 }
 
 void HuffmanNode::processCodes(const std::string& baseCode)
@@ -269,7 +281,7 @@ string huffmanEncode(const string& toEncode, HuffmanNode* huffmanTree)
      **/
 
     // Your code
-    std::string charactersCodes[256]; // array of 256 huffman codes for each character
+    std::string charactersCodes[128]; // array of 256 huffman codes for each character
     huffmanTree->fillCharactersArray(charactersCodes);
     string encoded = "";
     for (char character : toEncode) {

@@ -43,8 +43,10 @@ void insertHeapNode(int * heap, int * heapSize, int value)
 	// use (*this)[i] or this->get(i) to get a value at index i
 	int i = *heapSize;
 	heap[i] = value;
-	while (i>0 && heap[i] > heap[(i-1)/2]) {
-		exchange(heap,i,(i-1)/2);
+	while (i>0) {
+		if (heap[i] > heap[(i-1)/2]) {
+			exchange(heap,i,(i-1)/2);
+		}
 		i = (i-1)/2;
 	}
 	(*heapSize)++;
@@ -85,13 +87,16 @@ void heapSort(int * heap, int heapSize)
 		exchange(heap,i,0);
 		heapify(heap,heapSize,i);
 	}
+	exchange(heap,1,0);
 }
 
 int main(int argc, char *argv[])
 {
+	srand(time(NULL));
 	int heap[10];
 	int heapSize = 0;
-	int numbers[10] = {1,58,2,8,4,5,6,54,75,98};
+	//int numbers[10] = {1,58,2,8,4,5,6,54,75,98};
+	int numbers[10] = {rand()%50,rand()%50,rand()%50,rand()%50,rand()%50,rand()%50,rand()%50,rand()%50,rand()%50,rand()%50};
 
 	printArray(numbers,10);
 

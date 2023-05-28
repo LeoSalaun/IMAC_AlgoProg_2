@@ -1,2 +1,2 @@
- Bellman-Ford: https://docs.google.com/spreadsheets/d/1d54iKn2DYN-N7yzcg0tFs8CceplmHW7MS4pvT_paxZw/edit?usp=sharing
- Dijkstra: https://docs.google.com/spreadsheets/d/1biLT4i-GXuC-EPmkHNU7i-q0tMahCzwiPhvH2fd0L5w/edit?usp=sharing
+ Bellman-Ford: https://docs.google.com/spreadsheets/d/19GcVHqNCe4Djr10fC_uU3tDrh4FjAonemaXFLu0vydI/edit#gid=0
+ Dijkstra: https://docs.google.com/spreadsheets/d/1x0-lpOH2Y5ZrTmCyMjC3KweAnzOUnruidiKDH2cIg8g/edit#gid=0
