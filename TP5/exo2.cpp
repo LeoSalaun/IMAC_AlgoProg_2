@@ -49,7 +49,18 @@ struct MapNode
      */
     void insertNode(MapNode* node)
     {
-
+        if (this->key_hash > node->key_hash && this->left == nullptr) {
+            this->left = node;
+        }
+        else if (this->key_hash > node->key_hash) {
+            this->left->insertNode(node);
+        }
+        else if (this->key_hash < node->key_hash && this->right == nullptr) {
+            this->right = node;
+        }
+        else if (this->key_hash < node->key_hash) {
+            this->right->insertNode(node);
+        }
     }
 
     void insertNode(string key, int value)
@@ -72,7 +83,12 @@ struct Map
      */
     void insert(string key, int value)
     {
-
+        if (this->root == nullptr) {
+            this->root = new MapNode(key,value);
+        }
+        else {
+            this->root->insertNode(key,value);
+        }
     }
 
     /**
@@ -82,7 +98,20 @@ struct Map
      */
     int get(string key)
     {
-        return -1;
+        MapNode* aux = root;
+        unsigned long int keyHash = hash(key);
+        while (aux != nullptr) {
+            if (aux->key_hash == keyHash) {
+                return aux->value;
+            }
+            else if (aux->key_hash < keyHash) {
+                aux = aux->right;
+            }
+            else {
+                aux = aux->left;
+            }
+        }
+        return 0;
     }
 
     MapNode* root;
@@ -94,7 +123,7 @@ int main(int argc, char *argv[])
     srand(time(NULL));
 	Map map;
     std::vector<std::string> inserted;
-
+    
     map.insert("Yolo", 20);
     for (std::string& name : names)
     {

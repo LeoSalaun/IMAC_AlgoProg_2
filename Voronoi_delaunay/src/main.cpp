@@ -311,7 +311,53 @@ void updateDual(Application &app, /*std::vector<Coords> &points, std::vector<Seg
         pol.colour[0] = rand()%256;
         pol.colour[1] = rand()%256;
         pol.colour[2] = rand()%256;
+        std::vector<Triangle> tempTriangles;
         for (int t=0 ; t<app.triangles.size() ; t++) {
+            if ((app.triangles[t].p1 == app.points[p]) || (app.triangles[t].p2 == app.points[p]) || (app.triangles[t].p3 == app.points[p])) {
+                tempTriangles.push_back(app.triangles[t]);
+            }
+        }
+        int t1=0;
+        while (tempTriangles.size() > 0) {
+            CircumCircle(0,0,tempTriangles[t1].p1.x,tempTriangles[t1].p1.y,
+                             tempTriangles[t1].p2.x,tempTriangles[t1].p2.y,
+                             tempTriangles[t1].p3.x,tempTriangles[t1].p3.y,
+                             &cx,&cy,&rsqr);
+            pol.vx[pol.number] = (Sint16) cx;
+            pol.vy[pol.number] = (Sint16) cy;
+            pol.number++;
+            if (tempTriangles.size() > 1) {
+                int t2 = 0;
+                while (t2 < tempTriangles.size() && (t1 == t2 || !(partageSegment(tempTriangles[t1],tempTriangles[t2])))) {
+                    t2++;
+                }
+                tempTriangles.erase(tempTriangles.begin()+t1);
+                if (t2 < t1) {
+                    t1 = t2;
+                }
+                else {
+                    t1 = t2-1;
+                }
+            }
+            else {
+                tempTriangles.erase(tempTriangles.begin()+t1);
+            }
+        }
+        /*for (int t1=0 ; t<tempTriangles.size() ; t++) {
+            CircumCircle(0,0,app.triangles[t1].p1.x,app.triangles[t1].p1.y,
+                             app.triangles[t1].p2.x,app.triangles[t1].p2.y,
+                             app.triangles[t1].p3.x,app.triangles[t1].p3.y,
+                             &cx,&cy,&rsqr);
+            pol.vx[pol.number] = (Sint16) cx;
+            pol.vy[pol.number] = (Sint16) cy;
+            pol.number++;
+            if (tempTriangles.size() > 1) {
+                int t2 = 0;
+                bool adjacent = false;
+                while (t2 < tempTriangles.size()-1 && !(partageSegment(tempTriangles[t1],tempTriangles[(t1+t2)%tempTriangles.size()]))) {
+                    t2++;
+                }
+            }
             if ((app.triangles[t].p1 == app.points[p]) || (app.triangles[t].p2 == app.points[p]) || (app.triangles[t].p3 == app.points[p])) {
                 CircumCircle(0,0,app.triangles[t].p1.x,app.triangles[t].p1.y,
                                  app.triangles[t].p2.x,app.triangles[t].p2.y,
@@ -331,7 +377,7 @@ void updateDual(Application &app, /*std::vector<Coords> &points, std::vector<Seg
                 pol.vy[coo] = (Sint16) cy;
                 pol.number++;
             }
-        }
+        }*/
         polygones.push_back(pol);
     }
 
