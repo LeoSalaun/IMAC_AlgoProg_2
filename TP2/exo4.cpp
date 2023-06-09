@@ -66,12 +66,12 @@ void quickSort(int array[],int size){
 		int array2[size];
 
 		for (i=0 ; i<size ; i++) {
-			if (i <= pivot) {
+			if (i < pivot) {
 				array1[size1] = array[i];
 				cout << i << " - size1 : " << size1 << endl;
 				size1++;
 			}
-			else {
+			else if (i > pivot) {
 				array2[size2] = array[i];
 				cout << i << " - size2 : " << size2 << endl;
 				size2++;
@@ -86,7 +86,7 @@ void quickSort(int array[],int size){
 			if (i<=size1) {
 				array[i] = array1[i];
 			}
-			else {
+			else if (i > size1 + pivot) {
 				array[i] = array2[i-size1];
 			}
 		}

@@ -47,6 +47,7 @@ struct Application
 
     std::vector<Coords> points;
     std::vector<Triangle> triangles;
+    std::vector<Polygone> polygones;
 };
 
 bool compareCoords(Coords point1, Coords point2)
@@ -93,6 +94,9 @@ void drawTriangles(SDL_Renderer *renderer, const std::vector<Triangle> &triangle
 
 void drawPolygones(SDL_Renderer *renderer, const std::vector<Polygone> &polygones)
 {
+    for (std::size_t p=0 ; p<polygones.size() ; p++) {
+        filledPolygonRGBA(renderer, polygones[p].vx, polygones[p].vy, polygones[p].number, polygones[p].colour[0], polygones[p].colour[1], polygones[p].colour[2], 255);
+    }
 }
 
 void draw(SDL_Renderer *renderer, const Application &app)
@@ -101,6 +105,7 @@ void draw(SDL_Renderer *renderer, const Application &app)
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
+    drawPolygones(renderer, app.polygones);
     drawPoints(renderer, app.points);
     drawTriangles(renderer, app.triangles);
 }
@@ -189,10 +194,10 @@ void construitVoronoi(Application &app)
     Segment s1, s2, s3;
     Triangle t2;
 
-    for (int i = 0; i < app.points.size(); i++)
+    for (std::size_t i = 0; i < app.points.size(); i++)
     {
         std::vector<Segment> ls;
-        for (int j = 0; j < app.triangles.size(); j++)
+        for (std::size_t j = 0; j < app.triangles.size(); j++)
         {
             if (CircumCircle(app.points[i].x, app.points[i].y,
                              app.triangles[j].p1.x, app.triangles[j].p1.y,
@@ -225,10 +230,10 @@ void construitVoronoi(Application &app)
             }
         }
 
-        for (int s = 0; s < ls.size(); s++)
+        for (std::size_t s = 0; s < ls.size(); s++)
         {
             bool isDuplicate = false;
-            for (int s2 = 0; s2 < ls.size(); s2++)
+            for (std::size_t s2 = 0; s2 < ls.size(); s2++)
             {
                 if (s2 != s && ((ls[s].p1 == ls[s2].p2 && ls[s].p2 == ls[s2].p1) || (ls[s].p1 == ls[s2].p1 && ls[s].p2 == ls[s2].p2)))
                 {
@@ -258,38 +263,7 @@ bool partageSegment(Triangle t1, Triangle t2) {
         || ((t1.p2 == t2.p1 || t1.p2 == t2.p2 || t1.p2 == t2.p3) && (t1.p3 == t2.p1 || t1.p3 == t2.p2 || t1.p3 == t2.p3));
 }
 
-double getAngleABC(int xA, int yA, int xB, int yB, int xC, int yC) {
-    Coords ba, bc;
-    ba.x = xA-xB;
-    ba.y = yA-yB;
-    bc.x = xC-xB;
-    bc.y = yC-yB;
-
-    double angleBA = atan2(ba.y, ba.x);
-    double angleBC = atan2(bc.y, bc.x);
-
-    return angleBA-angleBC;
-
-    /*int prodScal = ba.x*bc.x + ba.y*bc.y;
-
-    double normBA = sqrt(pow(ba.x,2) + pow(ba.y,2));
-    double normBC = sqrt(pow(bc.x,2) + pow(bc.y,2));
-
-    double cosAngle = prodScal / (normBA*normBC);
-
-
-
-    int cooX = x2-x1, cooY = y2-y1;
-    double angle = acos(-cooY / sqrt(pow(cooX,2) + pow(cooY,2)));
-    if (cooX <= 0) {
-        return angle;
-    }
-    else {
-        return angle+180;
-    }*/
-}
-
-void updateDual(Application &app, /*std::vector<Coords> &points, std::vector<Segment> &segments*/ std::vector<Polygone> &polygones) {
+void updateDual(Application &app/*, std::vector<Coords> &points, std::vector<Segment> &segments std::vector<Polygone> &polygones*/) {
 
     /**
      * Pour chaque point de app
@@ -301,9 +275,9 @@ void updateDual(Application &app, /*std::vector<Coords> &points, std::vector<Seg
      */
 
     float cx,cy,rsqr;
-    polygones.clear();
+    app.polygones.clear();
 
-    for (int p=0 ; p<app.points.size() ; p++) {
+    for (std::size_t p=0 ; p<app.points.size() ; p++) {
         Polygone pol;
         *(pol.vx) = 0;
         *(pol.vy) = 0;
@@ -312,12 +286,12 @@ void updateDual(Application &app, /*std::vector<Coords> &points, std::vector<Seg
         pol.colour[1] = rand()%256;
         pol.colour[2] = rand()%256;
         std::vector<Triangle> tempTriangles;
-        for (int t=0 ; t<app.triangles.size() ; t++) {
+        for (std::size_t t=0 ; t<app.triangles.size() ; t++) {
             if ((app.triangles[t].p1 == app.points[p]) || (app.triangles[t].p2 == app.points[p]) || (app.triangles[t].p3 == app.points[p])) {
                 tempTriangles.push_back(app.triangles[t]);
             }
         }
-        int t1=0;
+        std::size_t t1=0;
         while (tempTriangles.size() > 0) {
             CircumCircle(0,0,tempTriangles[t1].p1.x,tempTriangles[t1].p1.y,
                              tempTriangles[t1].p2.x,tempTriangles[t1].p2.y,
@@ -327,7 +301,7 @@ void updateDual(Application &app, /*std::vector<Coords> &points, std::vector<Seg
             pol.vy[pol.number] = (Sint16) cy;
             pol.number++;
             if (tempTriangles.size() > 1) {
-                int t2 = 0;
+                std::size_t t2 = 0;
                 while (t2 < tempTriangles.size() && (t1 == t2 || !(partageSegment(tempTriangles[t1],tempTriangles[t2])))) {
                     t2++;
                 }
@@ -343,75 +317,11 @@ void updateDual(Application &app, /*std::vector<Coords> &points, std::vector<Seg
                 tempTriangles.erase(tempTriangles.begin()+t1);
             }
         }
-        /*for (int t1=0 ; t<tempTriangles.size() ; t++) {
-            CircumCircle(0,0,app.triangles[t1].p1.x,app.triangles[t1].p1.y,
-                             app.triangles[t1].p2.x,app.triangles[t1].p2.y,
-                             app.triangles[t1].p3.x,app.triangles[t1].p3.y,
-                             &cx,&cy,&rsqr);
-            pol.vx[pol.number] = (Sint16) cx;
-            pol.vy[pol.number] = (Sint16) cy;
-            pol.number++;
-            if (tempTriangles.size() > 1) {
-                int t2 = 0;
-                bool adjacent = false;
-                while (t2 < tempTriangles.size()-1 && !(partageSegment(tempTriangles[t1],tempTriangles[(t1+t2)%tempTriangles.size()]))) {
-                    t2++;
-                }
-            }
-            if ((app.triangles[t].p1 == app.points[p]) || (app.triangles[t].p2 == app.points[p]) || (app.triangles[t].p3 == app.points[p])) {
-                CircumCircle(0,0,app.triangles[t].p1.x,app.triangles[t].p1.y,
-                                 app.triangles[t].p2.x,app.triangles[t].p2.y,
-                                 app.triangles[t].p3.x,app.triangles[t].p3.y,
-                                 &cx,&cy,&rsqr);
-                int coo = 0;
-                //cout << angleY(app.points[p].x,app.points[p].y,(Sint16) cx,(Sint16) cy) << " - " << angleY(app.points[p].x,app.points[p].y,pol.vx[coo],pol.vx[coo]) << endl;
-                while (coo < pol.number && getAngleABC((Sint16) cx,(Sint16) cy,app.points[p].x,app.points[p].y,pol.vx[coo],pol.vx[coo]) > 0.0) {
-                    
-                    coo++;
-                }
-                for (int i=pol.number-1 ; i>=coo ; i--) {
-                    pol.vx[i+1] = pol.vx[i];
-                    pol.vy[i+1] = pol.vy[i];
-                }
-                pol.vx[coo] = (Sint16) cx;
-                pol.vy[coo] = (Sint16) cy;
-                pol.number++;
-            }
-        }*/
-        polygones.push_back(pol);
+        app.polygones.push_back(pol);
     }
-
-
-    /*points.clear();
-    segments.clear();
-
-    for (int t=0 ; t<app.triangles.size() ; t++) {
-        Coords c;
-        float cx,cy,rsqr;
-        CircumCircle(0,0,app.triangles[t].p1.x,app.triangles[t].p1.y,
-                         app.triangles[t].p2.x,app.triangles[t].p2.y,
-                         app.triangles[t].p3.x,app.triangles[t].p3.y,
-                         &cx,&cy,&rsqr);
-        c.x = int(cx);
-        c.y = int(cy);
-        points.push_back(c);
-    }
-    
-    for (int t=0 ; t<app.triangles.size() ; t++) {
-        std::vector<Triangle> adjacents;
-
-        for (int t2=0 ; t2<app.triangles.size() ; t2++) {
-            if (t != t2 && partageSegment(app.triangles[t],app.triangles[t2])) {
-                Segment s;
-                s.p1 = points[t];
-                s.p2 = points[t2];
-                segments.push_back(s);
-            }
-        }
-    }*/
 }
 
-bool handleEvent(Application &app, /*std::vector<Coords> &points, std::vector<Segment> &segments*/ std::vector<Polygone> &polygones)
+bool handleEvent(Application &app)
 {
     /* Remplissez cette fonction pour gérer les inputs utilisateurs */
     SDL_Event e;
@@ -440,7 +350,7 @@ bool handleEvent(Application &app, /*std::vector<Coords> &points, std::vector<Se
                 app.focus.y = 0;
                 app.points.push_back(Coords{e.button.x, e.button.y});
                 construitVoronoi(app);
-                updateDual(app,/*points,segments*/polygones);
+                updateDual(app);
             }
         }
     }
@@ -453,11 +363,6 @@ int main(int argc, char **argv)
     SDL_Renderer *renderer;
     Application app{720, 720, Coords{0, 0}};
     bool is_running = true;
-
-    std::vector<Coords> points;
-    std::vector<Segment> segments;
-
-    std::vector<Polygone> polygones;
 
     // Creation de la fenetre
     gWindow = init("Awesome Voronoi", 720, 720);
@@ -475,7 +380,7 @@ int main(int argc, char **argv)
     {
         // INPUTS
         //is_running = handleEvent(app,points,segments);
-        is_running = handleEvent(app,polygones);
+        is_running = handleEvent(app);
         if (!is_running)
             break;
 
@@ -484,19 +389,6 @@ int main(int argc, char **argv)
         SDL_RenderClear(renderer);
 
         // DESSIN
-
-        /*for (int p=0 ; p<points.size() ; p++) {
-            pixelRGBA(renderer, points[p].x, points[p].y, 255, 0, 0, 255);
-        }
-
-        for (int s=0 ; s<segments.size() ; s++) {
-            lineRGBA(renderer, segments[s].p1.x, segments[s].p1.y, segments[s].p2.x, segments[s].p2.y, 255, 0, 0, 255);
-        }*/
-
-        for (int p=0 ; p<polygones.size() ; p++) {
-            filledPolygonRGBA(renderer, polygones[p].vx, polygones[p].vy, polygones[p].number, polygones[p].colour[0], polygones[p].colour[1], polygones[p].colour[2], 255);
-        }
-
         draw(renderer, app);
 
         // VALIDATION FRAME

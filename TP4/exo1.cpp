@@ -85,7 +85,8 @@ void heapSort(int * heap, int heapSize)
 {
 	for (int i=heapSize-1 ; i>=0 ; i--) {
 		exchange(heap,i,0);
-		heapify(heap,heapSize,i);
+		heapSize--;
+		heapify(heap,heapSize,0);
 	}
 	exchange(heap,1,0);
 }

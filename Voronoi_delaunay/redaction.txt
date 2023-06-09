@@ -1,0 +1,39 @@
+
+	Le container list reprend le fonctionnement d'une liste chaînée, c'est-à-dire une liste dont chaque élément contient un pointeur
+pointant vers son prédécesseur et un autre pointant vers son successeur. Il permet de facilement et efficacement ajouter des éléments et en
+supprimer à partir de n'importe quel emplacement de la liste. Il s'agit d'un container très utile dans des cas où les éléments sont menés à
+être souvent supprimés ou ajoutés à n'importe quel endroit de la liste.
+	En contrepartie, il est compliqué d'accéder à des éléments de la liste étant donné l'obligation d'itérer à partir du premier ou du
+dernier élément. De plus, chaque élément consomme davantage d'espace mémoire en raison de l'utilisation de pointeurs vers son prédécesseur
+et son successeur.
+
+
+	Le constainer vector permet de manipuler des listes dynamiques d'éléments. Il gère l'allocation et la libération d'espace mémoire
+en cas d'ajout ou de suppression d'éléments, ayant ainsi une taille variable. Plus exactement, une capacité est définie pour le vector.
+Si jamais la taille du vector dépasse la capacité, alors il sera entièrement réaffecté avec un nouvelle capacité, plus grande. Ce dynamisme
+implique que les éléments contenus dans un vector consomment davantage d'espace mémoire par rapport à une liste classique.
+	Cela implique que les vectors soient généralement utilisés lorsque le nombre d'élements à stocker est à peu près connu et que ce
+dernier n'ait pas à grandement changer. De plus, c'est l'un des pires containers en termes de performances lorsqu'il s'agit d'insérer ou
+de supprimer des éléments à des positions autres que la fin de la liste. À l'invers, il est très performant lorsqu'il faut ajouter ou
+supprimer des éléments à la fin de la liste (structure de pile, LIFO -> Last In First Out) et excellent dans l'accès à n'importe lequel de
+ses éléments.
+
+
+	Le container deque (double-ended queue) implémente à la fois le fonctionnement des piles (structure LIFO -> Last In First Out) et
+des files (structure FIFO -> First In First Out). Il s'agit donc d'une liste d'éléments dont la taille est dynamique et qui peut s'étendre
+ou se réduire depuis son premier et son dernier élément. De cette manière, c'est un container très rapide lorsqu'il s'agit d'ajouter ou de
+retirer des éléments en début ou en fin de queue mais bien moins efficace lorsque ces opérations doivent être menées à un autre emplacement
+dans la liste. Ce container est en général utilisé lorsque ses éléments doivent être manipulés en série.
+	Contrairement au container vector, les deques stockent leurs éléments de manière dispersée dans des morceaux d'espace mémoire.
+Les informations de ceux-ci sont conservés en interne afin de pouvoir être accédés par l'intermédiaire d'itérateurs. Le fonctionnement des
+deques leur permet de bien mieux gérer l'ajout ou la suppression d'éléments lorsqu'il s'agit d'en manipuler un grand nombre, là où la
+réallocation faite par un vector peut finir par devenir très coûteuse. En revanche, les deques gèrent mal l'insertion et la suppression
+d'éléments autre part qu'en début et en fin de liste.
+
+	Le container map permet de gérer des tableaux associatifs d'éléments sous la forme d'un couple clé-valeur. Chaque clé est unique et
+permet d'identifier la valeur qui lui est associée. L'originalité par rapport aux listes classiques est que la clé puisse avoir n'importe
+quel type (même si toutes les clés d'une même map doivent avoir le même type) et que leur valeurs ne doit pas forcément se suivre (par
+exemple, une suite de clés peut être (1 ; 2 ; 4 ; 5 ; 8 ; ...)). Les clés sont triées en interne selon la méthode de comparaisont de leur
+type/objet respectif.
+	Si les maps ne sont pas très efficaces lorsqu'il s'agit d'accéder à un élément directement via sa clé, elles permettent l'itération
+suivant l'ordre des clés. Typiquement, les maps sont implémentées sous la forme d'arbres de recherche binaires.
