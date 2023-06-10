@@ -56,30 +56,32 @@ void Graph::wideTravel(GraphNode *first, GraphNode *nodes[], int &nodesSize, boo
 	 * nodeQueue.size() -> size of the queue
 	 */
 
-	if (nodesSize == 0) {
-		visited[first->value] = true;
-		nodes[nodesSize] = first;
-		nodesSize++;
-	}
-
 	std::queue<GraphNode*> nodeQueue;
 	//nodeQueue.push(first);
 
-	Edge* edge = first->edges;
-	while (edge != nullptr) {
-		if (!(visited[edge->destination->value])) {
-			nodeQueue.push(edge->destination);
-			visited[edge->destination->value] = true;
-			nodes[nodesSize] = edge->destination;
-			nodesSize++;
-		}
-		edge = edge->next;
-	}
+	nodeQueue.push(first);
+	visited[first->value] = true;
+	nodes[nodesSize] = first;
+	nodesSize++;
 
 	while (nodeQueue.size() > 0) {
-		this->Graph::wideTravel(nodeQueue.front(),nodes,nodesSize,visited);
+		GraphNode * current = nodeQueue.front();
 		nodeQueue.pop();
+
+		Edge* edge = first->edges;
+		while (edge != nullptr) {
+			if (!(visited[edge->destination->value])) {
+				nodeQueue.push(edge->destination);
+				visited[edge->destination->value] = true;
+				nodes[nodesSize] = edge->destination;
+				nodesSize++;
+			}
+			edge = edge->next;
+		}
 	}
+
+
+	
 }
 
 bool Graph::detectCycle(GraphNode *first, bool visited[])
